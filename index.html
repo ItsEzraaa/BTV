@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beyond The VAR — Beyond the 90 Minutes</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1F3EE; --panel:#FFFFFF; --ink:#12160F; --ink-soft:#565C4F;
+    --pitch:#1B4332; --pitch-soft:#DCE8DF; --yellow:#FFD400; --red:#E8402C;
+    --green-tier:#2E8B57; --amber-tier:#E8A33D; --red-tier:#D64545;
+    --sk-a:#E7E9E2; --sk-b:#F5F6F2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{ background:var(--paper); color:var(--ink); font-family:'Manrope',sans-serif; line-height:1.5; }
+  h1,h2,h3,.display{ font-family:'Anton',sans-serif; text-transform:uppercase; letter-spacing:0.5px; line-height:0.95; }
+  .mono{ font-family:'Space Mono',monospace; }
+  a{ color:inherit; text-decoration:none; }
+  ul{ list-style:none; }
+  .wrap{ max-width:1280px; margin:0 auto; padding:0 32px; }
+
+  .var-frame{ position:relative; }
+  .var-frame::before, .var-frame::after, .var-frame .c2, .var-frame .c3{
+    content:""; position:absolute; width:22px; height:22px; border-color:var(--yellow); border-style:solid; border-width:0; z-index:2;
+  }
+  .var-frame::before{ top:-2px; left:-2px; border-top-width:4px; border-left-width:4px; }
+  .var-frame::after{ top:-2px; right:-2px; border-top-width:4px; border-right-width:4px; }
+  .var-frame .c2{ bottom:-2px; left:-2px; border-bottom-width:4px; border-left-width:4px; }
+  .var-frame .c3{ bottom:-2px; right:-2px; border-bottom-width:4px; border-right-width:4px; }
+
+  .skel{ background:linear-gradient(100deg, var(--sk-a) 30%, var(--sk-b) 50%, var(--sk-a) 70%); background-size:200% 100%; animation:shimmer 1.8s ease-in-out infinite; }
+  @keyframes shimmer{ 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
+  .skel-line{ height:12px; border-radius:2px; margin-bottom:8px; }
+
+  header{ background:var(--ink); color:var(--paper); border-bottom:4px solid var(--yellow); position:relative; z-index:50; }
+  .top-bar{ display:flex; align-items:center; justify-content:space-between; padding:16px 0; }
+  .logo-block{ display:flex; align-items:center; gap:12px; }
+  .logo-mark{ width:36px; height:36px; background:var(--yellow); position:relative; }
+  .logo-mark::before{ content:""; position:absolute; inset:8px; border:3px solid var(--ink); }
+  .logo-text .display{ font-size:20px; letter-spacing:1px; }
+  .logo-text .tag{ font-family:'Space Mono',monospace; font-size:9.5px; color:var(--yellow); letter-spacing:1px; }
+  .sub-tag{ font-size:11px; color:#9AA08D; margin-top:2px; max-width:340px; line-height:1.3; }
+
+  nav.main-nav > ul{ display:flex; gap:6px; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.4px; }
+  nav.main-nav > ul > li{ position:relative; }
+  nav.main-nav > ul > li > a{ display:block; padding:10px 14px; opacity:0.9; cursor:pointer; }
+  nav.main-nav > ul > li:hover > a{ opacity:1; color:var(--yellow); }
+  .submenu{ display:none; position:absolute; top:100%; left:0; background:var(--panel); color:var(--ink); min-width:220px; border:2px solid var(--ink); box-shadow:6px 6px 0 rgba(0,0,0,0.15); }
+  nav.main-nav > ul > li:hover .submenu{ display:block; }
+  .submenu li a{ display:block; padding:11px 16px; font-size:12.5px; font-weight:600; text-transform:none; border-bottom:1px solid #EAEAE4; }
+  .submenu li:last-child a{ border-bottom:none; }
+  .submenu li a:hover{ background:var(--pitch-soft); color:var(--pitch); }
+  .search-btn{ width:34px; height:34px; border:1.5px solid var(--paper); display:flex; align-items:center; justify-content:center; opacity:0.85; }
+
+  .utility-bar{ background:#1D2317; color:var(--paper); border-bottom:1px solid rgba(255,255,255,0.08); }
+  .utility-bar .wrap{ display:flex; align-items:center; justify-content:space-between; padding:9px 32px; font-size:12px; }
+  #live-date{ font-family:'Space Mono',monospace; opacity:0.85; }
+  .live-score-strip{ display:flex; align-items:center; gap:10px; }
+  .live-dot{ width:7px; height:7px; border-radius:50%; background:var(--ink-soft); }
+  .live-score-strip .label{ font-weight:800; letter-spacing:0.5px; text-transform:uppercase; font-size:11px; color:var(--yellow); }
+  .fixture-chip{ font-family:'Space Mono',monospace; font-size:11px; opacity:0.75; padding:0 10px; border-left:1px solid rgba(255,255,255,0.15); }
+
+  .section-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:22px; border-bottom:3px solid var(--ink); padding-bottom:10px; }
+  .section-head h2{ font-size:24px; }
+  .section-head .num{ font-family:'Space Mono',monospace; font-size:11.5px; color:var(--ink-soft); }
+  .empty-note{ font-size:12.5px; color:var(--ink-soft); margin-top:-10px; margin-bottom:20px; font-style:italic; }
+
+  .hero-section{ padding:36px 0 0; }
+  .hero-box{ position:relative; }
+  .hero-img{ height:400px; background:linear-gradient(160deg,var(--pitch) 0%,#0F2A20 100%); position:relative; overflow:hidden; }
+  .hero-img::after{ content:""; position:absolute; inset:0; background-image:repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 40px); }
+  .badge-row{ position:absolute; top:18px; left:18px; display:flex; gap:8px; z-index:3; }
+  .badge{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.4px; padding:6px 13px; }
+  .badge.cat{ background:var(--red); color:#fff; transform:rotate(-3deg); }
+  .badge.tier{ background:var(--ink); color:var(--yellow); border:1px solid var(--yellow); }
+  .hero-cap{ background:var(--panel); border:2px solid var(--ink); border-top:none; padding:24px 26px; }
+  .hero-cap .skel-line.h1{ height:26px; width:85%; }
+  .hero-cap .skel-line.h2{ height:26px; width:55%; }
+  .hero-meta{ display:flex; gap:12px; font-size:11.5px; color:var(--ink-soft); font-family:'Space Mono',monospace; margin-top:12px; }
+
+  .content-grid{ display:grid; grid-template-columns:2.2fr 1fr; gap:32px; padding:48px 0; align-items:start; }
+
+  .mercato-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .mercato-card{ background:var(--panel); border:2px solid var(--ink); padding:16px; }
+  .tier-row{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .tier-dot{ width:9px; height:9px; border-radius:50%; }
+  .tier-dot.t1{ background:var(--green-tier);} .tier-dot.t2{ background:var(--amber-tier);} .tier-dot.t3{ background:var(--red-tier);}
+  .tier-label{ font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.4px; color:var(--ink-soft); }
+  .mercato-card .skel-img{ height:90px; margin-bottom:10px; }
+
+  .viral-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:44px; }
+  .viral-card{ background:var(--panel); border:2px solid var(--ink); overflow:hidden; }
+  .viral-card .skel-img{ height:150px; }
+  .viral-body{ padding:14px; }
+
+  .tactics-section{ margin-top:44px; }
+  .tactics-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:20px; }
+  .tactics-img{ height:320px; }
+  .tactics-list{ display:flex; flex-direction:column; gap:14px; }
+  .tactics-list-item{ background:var(--panel); border:2px solid var(--ink); padding:14px; display:flex; gap:12px; }
+  .tactics-list-item .skel-img{ width:56px; height:56px; flex-shrink:0; }
+  .tactics-list-item .lines{ flex:1; padding-top:2px; }
+
+  .sidebar{ display:flex; flex-direction:column; gap:20px; position:sticky; top:20px; }
+  .side-block{ background:var(--panel); border:2px solid var(--ink); padding:18px; }
+  .side-block h3{ font-size:15px; margin-bottom:14px; padding-bottom:10px; border-bottom:2px solid var(--ink); }
+  .poll-q{ font-size:14px; font-weight:800; margin-bottom:14px; }
+  .poll-opt-btn{ display:block; width:100%; text-align:left; background:var(--pitch-soft); border:1.5px solid var(--pitch); color:var(--pitch); font-weight:700; font-size:12.5px; padding:10px 12px; margin-bottom:8px; cursor:pointer; font-family:'Manrope',sans-serif; }
+  .poll-opt-btn:hover{ background:var(--pitch); color:#fff; }
+  .poll-note{ font-size:11px; color:var(--ink-soft); font-style:italic; margin-top:6px; }
+  .fixture-row{ display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid #EAEAE4; font-size:12.5px; }
+  .fixture-row:last-child{ border-bottom:none; }
+  .fixture-teams{ font-weight:700; }
+  .fixture-time{ font-family:'Space Mono',monospace; font-size:11px; color:var(--ink-soft); }
+  .quicklink-item{ display:flex; justify-content:space-between; padding:8px 0; font-size:12.5px; font-weight:700; border-bottom:1px solid #EAEAE4; }
+  .quicklink-item:last-child{ border-bottom:none; }
+  .quicklink-item span.arrow{ color:var(--ink-soft); }
+
+  footer{ background:var(--ink); color:var(--paper); padding:44px 0 24px; }
+  .foot-grid{ display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:32px; padding-bottom:28px; border-bottom:1px solid rgba(255,255,255,0.15); }
+  .foot-brand .logo-text .display{ color:var(--paper); font-size:18px; }
+  .foot-brand p{ font-size:12.5px; color:#9AA08D; margin-top:12px; line-height:1.6; max-width:280px; }
+  .foot-col h4{ font-size:12px; text-transform:uppercase; letter-spacing:0.5px; color:var(--yellow); margin-bottom:14px; }
+  .foot-col ul li{ margin-bottom:9px; }
+  .foot-col ul li a{ font-size:12.5px; color:#C7CBBB; }
+  .foot-col ul li a:hover{ color:var(--yellow); }
+  .foot-bottom{ display:flex; justify-content:space-between; align-items:center; padding-top:20px; font-size:11.5px; color:#8A9080; }
+  .foot-credit{ font-family:'Space Mono',monospace; font-size:11px; }
+  .social-icons{ display:flex; gap:10px; }
+  .social-icons a{ width:32px; height:32px; border:1.5px solid #454B3D; display:flex; align-items:center; justify-content:center; font-size:13px; }
+  .social-icons a:hover{ border-color:var(--yellow); color:var(--yellow); }
+</style>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<style>.dynamic-link{display:block;cursor:pointer}.article-image{width:100%;height:100%;object-fit:cover;display:block}.article-title{font-family:'Anton',sans-serif;text-transform:uppercase;line-height:1.05}.article-excerpt{font-size:12px;color:var(--ink-soft);margin-top:7px}</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap top-bar">
+    <div class="logo-block">
+      <div class="logo-mark"></div>
+      <div class="logo-text">
+        <div class="display">Beyond The VAR</div>
+        <div class="tag">beyond the 90 minutes</div>
+        <div class="sub-tag">Indonesia's leading media for transfers, tactics, and football culture</div>
+      </div>
+    </div>
+
+    <nav class="main-nav">
+      <ul>
+        <li><a>Mercato Watch</a>
+          <ul class="submenu">
+            <li><a href="#">Official Here We Go</a></li>
+            <li><a href="#">Transfer Tier List</a></li>
+            <li><a href="#">Rumor &amp; Quotes</a></li>
+          </ul>
+        </li>
+        <li><a>Tactics &amp; Data</a>
+          <ul class="submenu">
+            <li><a href="#">Tactical Breakdown</a></li>
+            <li><a href="#">Scouting Report</a></li>
+            <li><a href="#">Financial &amp; FFP Watch</a></li>
+          </ul>
+        </li>
+        <li><a>Pitch Drama</a>
+          <ul class="submenu">
+            <li><a href="#">Viral Statements</a></li>
+            <li><a href="#">Press Conf Drama</a></li>
+            <li><a href="#">Social Media Watch</a></li>
+          </ul>
+        </li>
+        <li><a>On &amp; Off Pitch</a>
+          <ul class="submenu">
+            <li><a href="#">Jersey &amp; Kits Review</a></li>
+            <li><a href="#">Lifestyle &amp; Fashion</a></li>
+            <li><a href="#">Gaming &amp; FM/FC</a></li>
+          </ul>
+        </li>
+        <li><a>Community Hub</a>
+          <ul class="submenu">
+            <li><a href="#">Fan Rating</a></li>
+            <li><a href="#">Match Polls</a></li>
+            <li><a href="#">Quiz &amp; Trivia</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="search-btn">⌕</div>
+  </div>
+</header>
+
+<div class="utility-bar">
+  <div class="wrap">
+    <div id="live-date" class="mono">Memuat tanggal...</div>
+    <div class="live-score-strip">
+      <span class="live-dot"></span>
+      <span class="label">Live score</span>
+      <span class="fixture-chip">Belum ada pertandingan live</span>
+      <span class="fixture-chip">Berikutnya: Tim A vs Tim B · Sabtu 20:00 WIB</span>
+    </div>
+  </div>
+</div>
+
+<section class="hero-section wrap">
+  <div class="hero-box var-frame">
+    <span class="c2"></span><span class="c3"></span>
+    <div class="hero-img">
+      <div class="badge-row">
+        <span class="badge cat">Kategori</span>
+        <span class="badge tier">Tier reliability: —</span>
+      </div>
+    </div>
+    <div class="hero-cap">
+      <div class="skel-line h1 skel"></div>
+      <div class="skel-line h2 skel"></div>
+      <div class="hero-meta">
+        <span>REDAKSI BTV</span><span>·</span><span>— MIN READ</span><span>·</span><span>MENUNGGU ARTIKEL PERTAMA</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap content-grid">
+  <main>
+
+    <section id="mercato-watch">
+      <div class="section-head">
+        <h2>Mercato Radar</h2>
+        <span class="num">FABRIZIO ROMANO SPECIAL WIDGET</span>
+      </div>
+      <p class="empty-note">Belum ada berita di kategori ini. Update dari Fabrizio Romano &amp; 433 akan segera tayang!</p>
+      <div class="mercato-grid">
+        <div class="mercato-card">
+          <div class="skel-img skel"></div>
+          <div class="tier-row"><span class="tier-dot t1"></span><span class="tier-label">Tier 1 · Here We Go</span></div>
+          <div class="skel-line skel" style="width:95%;"></div>
+          <div class="skel-line skel" style="width:60%;"></div>
+        </div>
+        <div class="mercato-card">
+          <div class="skel-img skel"></div>
+          <div class="tier-row"><span class="tier-dot t2"></span><span class="tier-label">Tier 2 · In Talks</span></div>
+          <div class="skel-line skel" style="width:95%;"></div>
+          <div class="skel-line skel" style="width:60%;"></div>
+        </div>
+        <div class="mercato-card">
+          <div class="skel-img skel"></div>
+          <div class="tier-row"><span class="tier-dot t3"></span><span class="tier-label">Tier 3 · Rumor</span></div>
+          <div class="skel-line skel" style="width:95%;"></div>
+          <div class="skel-line skel" style="width:60%;"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pitch-drama" class="viral-section">
+      <div class="section-head" style="margin-top:44px;">
+        <h2>433 Viral Feed</h2>
+        <span class="num">VISUAL-FIRST MOMENTS</span>
+      </div>
+      <p class="empty-note">Belum ada momen viral yang tayang. Statement panas &amp; quote heboh bakal muncul di sini.</p>
+      <div class="viral-grid">
+        <div class="viral-card">
+          <div class="skel-img skel"></div>
+          <div class="viral-body">
+            <div class="skel-line skel" style="width:90%;"></div>
+            <div class="skel-line skel" style="width:50%;"></div>
+          </div>
+        </div>
+        <div class="viral-card">
+          <div class="skel-img skel"></div>
+          <div class="viral-body">
+            <div class="skel-line skel" style="width:90%;"></div>
+            <div class="skel-line skel" style="width:50%;"></div>
+          </div>
+        </div>
+        <div class="viral-card">
+          <div class="skel-img skel"></div>
+          <div class="viral-body">
+            <div class="skel-line skel" style="width:90%;"></div>
+            <div class="skel-line skel" style="width:50%;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tactics-data" class="tactics-section">
+      <div class="section-head">
+        <h2>Tactics &amp; Match Analysis</h2>
+        <span class="num">DEEP DIVE</span>
+      </div>
+      <p class="empty-note">Belum ada analisis taktik yang tayang. Breakdown pertandingan &amp; scouting report menyusul segera.</p>
+      <div class="tactics-grid">
+        <div class="tactics-img skel"></div>
+        <div class="tactics-list">
+          <div class="tactics-list-item">
+            <div class="skel-img skel"></div>
+            <div class="lines">
+              <div class="skel-line skel" style="width:90%;"></div>
+              <div class="skel-line skel" style="width:60%;"></div>
+            </div>
+          </div>
+          <div class="tactics-list-item">
+            <div class="skel-img skel"></div>
+            <div class="lines">
+              <div class="skel-line skel" style="width:90%;"></div>
+              <div class="skel-line skel" style="width:60%;"></div>
+            </div>
+          </div>
+          <div class="tactics-list-item">
+            <div class="skel-img skel"></div>
+            <div class="lines">
+              <div class="skel-line skel" style="width:90%;"></div>
+              <div class="skel-line skel" style="width:60%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <aside class="sidebar">
+
+    <div class="side-block">
+      <h3>Grade transfer ini</h3>
+      <div class="poll-q">Siapa pemain terbaik minggu ini?</div>
+      <button class="poll-opt-btn">Pemain A</button>
+      <button class="poll-opt-btn">Pemain B</button>
+      <button class="poll-opt-btn">Pemain C</button>
+      <div class="poll-note">Polling akan aktif setelah pekan pertandingan pertama dimulai.</div>
+    </div>
+
+    <div class="side-block">
+      <h3>Jadwal pertandingan</h3>
+      <div class="fixture-row"><span class="fixture-teams">Tim A vs Tim B</span><span class="fixture-time">Sab 20:00</span></div>
+      <div class="fixture-row"><span class="fixture-teams">Tim C vs Tim D</span><span class="fixture-time">Min 02:00</span></div>
+      <div class="fixture-row"><span class="fixture-teams">Tim E vs Tim F</span><span class="fixture-time">Min 21:00</span></div>
+      <div class="poll-note">Jadwal contoh — terhubung ke data live saat konten mulai tayang.</div>
+    </div>
+
+    <div class="side-block">
+      <h3>Jelajahi kanal</h3>
+      <div class="quicklink-item"><span>Mercato Watch</span><span class="arrow">→</span></div>
+      <div class="quicklink-item"><span>Tactics &amp; Data</span><span class="arrow">→</span></div>
+      <div class="quicklink-item"><span>Pitch Drama</span><span class="arrow">→</span></div>
+      <div class="quicklink-item"><span>On &amp; Off Pitch</span><span class="arrow">→</span></div>
+      <div class="quicklink-item"><span>Community Hub</span><span class="arrow">→</span></div>
+    </div>
+
+  </aside>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="logo-text"><div class="display">Beyond The VAR</div></div>
+        <p>Indonesia's leading media for transfers, tactics, and football culture. Meliput 4 liga top Eropa: Premier League, La Liga, Serie A, dan Bundesliga.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Mercato Watch</h4>
+        <ul>
+          <li><a href="#">Official Here We Go</a></li>
+          <li><a href="#">Transfer Tier List</a></li>
+          <li><a href="#">Rumor &amp; Quotes</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Tactics &amp; Data</h4>
+        <ul>
+          <li><a href="#">Tactical Breakdown</a></li>
+          <li><a href="#">Scouting Report</a></li>
+          <li><a href="#">Financial &amp; FFP Watch</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Pitch Drama</h4>
+        <ul>
+          <li><a href="#">Viral Statements</a></li>
+          <li><a href="#">Press Conf Drama</a></li>
+          <li><a href="#">Social Media Watch</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="foot-grid" style="border-bottom:none; padding-top:22px; padding-bottom:0;">
+      <div></div>
+      <div class="foot-col">
+        <h4>On &amp; Off Pitch</h4>
+        <ul>
+          <li><a href="#">Jersey &amp; Kits Review</a></li>
+          <li><a href="#">Lifestyle &amp; Fashion</a></li>
+          <li><a href="#">Gaming &amp; FM/FC</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Community Hub</h4>
+        <ul>
+          <li><a href="#">Fan Rating</a></li>
+          <li><a href="#">Match Polls</a></li>
+          <li><a href="#">Quiz &amp; Trivia</a></li>
+        </ul>
+      </div>
+      <div></div>
+    </div>
+
+    <div class="foot-bottom">
+      <div class="foot-credit">Transfers powered by Fabrizio Romano updates | Viral culture powered by 433 vibes</div>
+      <div class="social-icons">
+        <a href="#" aria-label="X">X</a>
+        <a href="#" aria-label="Instagram">IG</a>
+        <a href="#" aria-label="TikTok">TT</a>
+        <a href="#" aria-label="YouTube">YT</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const dateEl = document.getElementById('live-date');
+  const now = new Date();
+  const opts = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+  dateEl.textContent = now.toLocaleDateString('id-ID', opts).toUpperCase();
+</script>
+
+<script>
+const BTV_DATA_URL='data/articles.json';
+const esc=(v='')=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+const articleUrl=s=>`article.html?slug=${encodeURIComponent(s)}`;
+const image=a=>a.image?`<img class="article-image" src="${esc(a.image)}" alt="${esc(a.title)}">`:'';
+const bySection=(items,s)=>items.filter(a=>a.section===s&&a.status!=='draft');
+function renderHero(a){if(!a)return;document.querySelector('.hero-box').innerHTML=`<span class="c2"></span><span class="c3"></span><a class="dynamic-link" href="${articleUrl(a.slug)}"><div class="hero-img">${image(a)}<div class="badge-row"><span class="badge cat">${esc(a.category||'Berita')}</span><span class="badge tier">${esc(a.tier||'Beyond The VAR')}</span></div></div><div class="hero-cap"><h1 class="article-title" style="font-size:34px">${esc(a.title)}</h1><p class="article-excerpt">${esc(a.excerpt||'')}</p><div class="hero-meta"><span>${esc(a.author||'REDAKSI BTV')}</span><span>·</span><span>${esc(a.read_time||'3 MIN READ')}</span><span>·</span><span>${new Date(a.date).toLocaleDateString('id-ID')}</span></div></div></a>`}
+function renderMercato(items){if(!items.length)return;document.querySelector('#mercato-watch .empty-note').style.display='none';document.querySelector('.mercato-grid').innerHTML=items.slice(0,3).map((a,i)=>`<a class="mercato-card dynamic-link" href="${articleUrl(a.slug)}"><div class="skel-img" style="background:var(--pitch-soft)">${image(a)}</div><div class="tier-row"><span class="tier-dot t${Math.min(i+1,3)}"></span><span class="tier-label">${esc(a.tier||a.category||'Mercato')}</span></div><h3 class="article-title" style="font-size:18px">${esc(a.title)}</h3><p class="article-excerpt">${esc(a.excerpt||'')}</p></a>`).join('')}
+function renderViral(items){if(!items.length)return;document.querySelector('#pitch-drama .empty-note').style.display='none';document.querySelector('.viral-grid').innerHTML=items.slice(0,3).map(a=>`<a class="viral-card dynamic-link" href="${articleUrl(a.slug)}"><div class="skel-img" style="background:var(--pitch-soft)">${image(a)}</div><div class="viral-body"><h3 class="article-title" style="font-size:18px">${esc(a.title)}</h3><p class="article-excerpt">${esc(a.excerpt||'')}</p></div></a>`).join('')}
+function renderTactics(items){if(!items.length)return;const section=document.querySelector('#tactics-data');section.querySelector('.empty-note').style.display='none';const [main,...rest]=items;section.querySelector('.tactics-grid').innerHTML=`<a class="tactics-img dynamic-link" href="${articleUrl(main.slug)}" style="background:var(--pitch-soft);position:relative;overflow:hidden">${image(main)}<div style="position:absolute;left:0;right:0;bottom:0;padding:16px;background:linear-gradient(transparent,rgba(0,0,0,.85));color:white"><h3 class="article-title" style="font-size:24px">${esc(main.title)}</h3></div></a><div class="tactics-list">${rest.slice(0,3).map(a=>`<a class="tactics-list-item dynamic-link" href="${articleUrl(a.slug)}"><div class="skel-img" style="background:var(--pitch-soft)">${image(a)}</div><div class="lines"><h3 class="article-title" style="font-size:16px">${esc(a.title)}</h3><p class="article-excerpt">${esc(a.excerpt||'')}</p></div></a>`).join('')}</div>`}
+(async()=>{try{const r=await fetch(`${BTV_DATA_URL}?v=${Date.now()}`);const d=await r.json();const a=(d.articles||[]).filter(x=>x.title&&x.slug).sort((x,y)=>new Date(y.date)-new Date(x.date));if(!a.length)return;renderHero(a.find(x=>x.featured)||a[0]);renderMercato(bySection(a,'mercato'));renderViral(bySection(a,'viral'));renderTactics(bySection(a,'tactics'))}catch(e){console.error(e)}})();
+if(window.netlifyIdentity){window.netlifyIdentity.on('init',u=>{if(!u&&location.hash.includes('confirmation_token'))window.netlifyIdentity.open('signup')})}
+</script>
+</body>
+</html>

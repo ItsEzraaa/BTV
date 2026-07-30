@@ -1,0 +1,42 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+site_url: "https://beyondthevar.netlify.app"
+display_url: "https://beyondthevar.netlify.app"
+
+collections:
+  - name: "content"
+    label: "Konten Website"
+    files:
+      - name: "articles"
+        label: "Daftar Artikel"
+        file: "data/articles.json"
+        format: "json"
+        fields:
+          - label: "Artikel"
+            name: "articles"
+            widget: "list"
+            summary: "{{fields.title}} — {{fields.category}}"
+            fields:
+              - { label: "Judul", name: "title", widget: "string" }
+              - { label: "Slug URL", name: "slug", widget: "string" }
+              - { label: "Tanggal", name: "date", widget: "datetime" }
+              - { label: "Penulis", name: "author", widget: "string", default: "Redaksi BTV" }
+              - { label: "Status", name: "status", widget: "select", options: ["published", "draft"], default: "published" }
+              - { label: "Artikel Utama", name: "featured", widget: "boolean", default: false }
+              - label: "Bagian Homepage"
+                name: "section"
+                widget: "select"
+                options:
+                  - { label: "Mercato Radar", value: "mercato" }
+                  - { label: "433 Viral Feed", value: "viral" }
+                  - { label: "Tactics & Match Analysis", value: "tactics" }
+              - { label: "Kategori", name: "category", widget: "string" }
+              - { label: "Tier / Label", name: "tier", widget: "string", required: false }
+              - { label: "Estimasi Baca", name: "read_time", widget: "string", default: "3 MIN READ" }
+              - { label: "Gambar Utama", name: "image", widget: "image", required: false }
+              - { label: "Ringkasan", name: "excerpt", widget: "text" }
+              - { label: "Isi Artikel", name: "body", widget: "markdown" }

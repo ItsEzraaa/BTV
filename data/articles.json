@@ -1,0 +1,19 @@
+{
+  "articles": [
+    {
+      "title": "Selamat Datang di Beyond The VAR",
+      "slug": "selamat-datang-di-beyond-the-var",
+      "date": "2026-07-30T16:30:00+07:00",
+      "author": "Redaksi BTV",
+      "status": "published",
+      "featured": true,
+      "section": "mercato",
+      "category": "Editorial",
+      "tier": "Beyond The VAR",
+      "read_time": "2 MIN READ",
+      "image": "",
+      "excerpt": "Artikel contoh untuk memastikan Decap CMS dan tampilan website sudah terhubung.",
+      "body": "Ini adalah artikel contoh. Masuk ke halaman **/admin** untuk mengedit atau menambahkan artikel baru."
+    }
+  ]
+}
